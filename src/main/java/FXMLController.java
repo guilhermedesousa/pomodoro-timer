@@ -2,6 +2,9 @@ import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 public class FXMLController {
 
@@ -15,9 +18,15 @@ public class FXMLController {
     private long lastTick;
     private long currentTime;
     private final PomodoroTimer timer;
+    private final MediaPlayer player;
 
     public FXMLController() {
         timer = new PomodoroTimer();
+
+        var path = getClass().getResource("clock-sound-effect.mp3").toExternalForm();
+        var media = new Media(path);
+
+        player = new MediaPlayer(media);
     }
 
     @FXML
@@ -79,6 +88,11 @@ public class FXMLController {
             currentTime -= 1000;
 
             if (currentTime <= 0) {
+                player.setOnEndOfMedia(() -> {
+                    player.stop();
+                    player.seek(Duration.ZERO);
+                });
+                player.play();
                 stopTimer();
             }
             updateUI();
